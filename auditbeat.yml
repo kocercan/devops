@@ -55,7 +55,7 @@ auditbeat.modules:
 
 - module: system
   datasets:
-    - host    # General host information, e.g. uptime, IPs
+#    - host    # General host information, e.g. uptime, IPs
     - login   # User logins, logouts, and system boots.
     - process # Started and stopped processes
 #    - socket  # Opened and closed sockets
