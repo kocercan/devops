@@ -55,9 +55,9 @@ auditbeat.modules:
 
 - module: system
   datasets:
-#    - host    # General host information, e.g. uptime, IPs
+    - host    # General host information, e.g. uptime, IPs
     - login   # User logins, logouts, and system boots.
-    - process # Started and stopped processes
+#    - process # Started and stopped processes
 #    - socket  # Opened and closed sockets
     - user    # User information
 
@@ -119,7 +119,7 @@ setup.kibana:
   # Scheme and port can be left out and will be set to the default (http and 5601)
   # In case you specify and additional path, the scheme is required: http://localhost:5601/path
   # IPv6 addresses should always be defined as: https://[2001:db8::1]:5601
-  host: "192.168.100.11:31300"
+  host: "192.168.100.19:5601"
 
   # Kibana Space ID
   # ID of the Kibana Space into which the dashboards should be loaded. By default,
@@ -146,7 +146,7 @@ setup.kibana:
 # ---------------------------- Elasticsearch Output ----------------------------
 output.elasticsearch:
   # Array of hosts to connect to.
-  hosts: ["192.168.100.11:30244"]
+  hosts: ["192.168.100.19:9200"]
 
   # Protocol - either `http` (default) or `https`.
   #protocol: "https"
@@ -241,3 +241,37 @@ logging.level: warning
 # This allows to enable 6.7 migration aliases
 #migration.6_to_7.enabled: true
 
+# ====================== Index Lifecycle Management (ILM) ======================
+
+# Configure index lifecycle management (ILM). These settings create a write
+# alias and add additional settings to the index template. When ILM is enabled,
+# output.elasticsearch.index is ignored, and the write alias is used to set the
+# index name.
+
+# Enable ILM support. Valid values are true, false, and auto. When set to auto
+# (the default), the Beat uses index lifecycle management when it connects to a
+# cluster that supports ILM; otherwise, it creates daily indices.
+setup.ilm.enabled: true
+
+# Set the prefix used in the index lifecycle write alias name. The default alias
+# name is 'auditbeat-%{[agent.version]}'.
+#setup.ilm.rollover_alias: 'auditbeat'
+
+# Set the rollover index pattern. The default is "%{now/d}-000001".
+setup.ilm.pattern: "{now/d}"
+
+# Set the lifecycle policy name. The default policy name is
+# 'beatname'.
+#setup.ilm.policy_name: "mypolicy"
+
+# The path to a JSON file that contains a lifecycle policy configuration. Used
+# to load your own lifecycle policy.
+#setup.ilm.policy_file:
+
+# Disable the check for an existing lifecycle policy. The default is true. If
+# you disable this check, set setup.ilm.overwrite: true so the lifecycle policy
+# can be installed.
+#setup.ilm.check_exists: true
+
+# Overwrite the lifecycle policy at startup. The default is false.
+#setup.ilm.overwrite: false
